@@ -3,45 +3,50 @@ from docxtpl import DocxTemplate
 import os
 
 app = Flask(__name__)
-
-# Base directory of project
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-
-# 🔹 Home page — loads Gift form
+# ---------- HOME ----------
 @app.route("/")
 def home():
-    return open(
-        os.path.join(BASE_DIR, "html", "gift.html"),
-        encoding="utf-8"
-    ).read()
+    return open(os.path.join(BASE_DIR, "html", "home.html"), encoding="utf-8").read()
 
+# ---------- SALE FORM ----------
+@app.route("/sale")
+def sale_form():
+    return open(os.path.join(BASE_DIR, "html", "sale.html"), encoding="utf-8").read()
 
-# 🔹 Generate Gift Report
-@app.route("/generate_gift", methods=["POST"])
-def generate_gift():
-    # Collect form data
+# ---------- GIFT FORM ----------
+@app.route("/gift")
+def gift_form():
+    return open(os.path.join(BASE_DIR, "html", "gift.html"), encoding="utf-8").read()
+
+# ---------- GENERATE SALE ----------
+@app.route("/generate_sale", methods=["POST"])
+def generate_sale():
     data = request.form.to_dict()
 
-    # Path to Word template
-    template_path = os.path.join(
-        BASE_DIR,
-        "templates_docx",
-        "gift.docx"
-    )
+    template = os.path.join(BASE_DIR, "templates_docx", "sale.docx")
+    output = "/tmp/sale_report.docx"
 
-    # Render-safe temporary save location
-    output_path = "/tmp/gift_report.docx"
-
-    # Generate document
-    doc = DocxTemplate(template_path)
+    doc = DocxTemplate(template)
     doc.render(data)
-    doc.save(output_path)
+    doc.save(output)
 
-    # Send file to browser
-    return send_file(output_path, as_attachment=True)
+    return send_file(output, as_attachment=True)
 
+# ---------- GENERATE GIFT ----------
+@app.route("/generate_gift", methods=["POST"])
+def generate_gift():
+    data = request.form.to_dict()
 
-# 🔹 Run locally
+    template = os.path.join(BASE_DIR, "templates_docx", "gift.docx")
+    output = "/tmp/gift_report.docx"
+
+    doc = DocxTemplate(template)
+    doc.render(data)
+    doc.save(output)
+
+    return send_file(output, as_attachment=True)
+
 if __name__ == "__main__":
     app.run(debug=True)
