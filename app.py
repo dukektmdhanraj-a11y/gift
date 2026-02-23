@@ -5,22 +5,35 @@ import os
 app = Flask(__name__)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# ---------- HOME ----------
+# ================= HEALTH CHECK (CRITICAL FOR RENDER) =================
+# UptimeRobot should monitor THIS route
+@app.route("/ping")
+def ping():
+    return "OK", 200
+
+
+# ================= HOME =================
 @app.route("/")
 def home():
-    return open(os.path.join(BASE_DIR, "html", "home.html"), encoding="utf-8").read()
+    with open(os.path.join(BASE_DIR, "html", "home.html"), encoding="utf-8") as f:
+        return f.read()
 
-# ---------- SALE FORM ----------
+
+# ================= SALE FORM =================
 @app.route("/sale")
 def sale_form():
-    return open(os.path.join(BASE_DIR, "html", "sale.html"), encoding="utf-8").read()
+    with open(os.path.join(BASE_DIR, "html", "sale.html"), encoding="utf-8") as f:
+        return f.read()
 
-# ---------- GIFT FORM ----------
+
+# ================= GIFT FORM =================
 @app.route("/gift")
 def gift_form():
-    return open(os.path.join(BASE_DIR, "html", "gift.html"), encoding="utf-8").read()
+    with open(os.path.join(BASE_DIR, "html", "gift.html"), encoding="utf-8") as f:
+        return f.read()
 
-# ---------- GENERATE SALE ----------
+
+# ================= GENERATE SALE =================
 @app.route("/generate_sale", methods=["POST"])
 def generate_sale():
     data = request.form.to_dict()
@@ -34,7 +47,8 @@ def generate_sale():
 
     return send_file(output, as_attachment=True)
 
-# ---------- GENERATE GIFT ----------
+
+# ================= GENERATE GIFT =================
 @app.route("/generate_gift", methods=["POST"])
 def generate_gift():
     data = request.form.to_dict()
@@ -47,6 +61,7 @@ def generate_gift():
     doc.save(output)
 
     return send_file(output, as_attachment=True)
+
 
 if __name__ == "__main__":
     app.run(debug=True)
